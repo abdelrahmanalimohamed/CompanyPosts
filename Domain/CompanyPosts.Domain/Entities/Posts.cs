@@ -15,4 +15,9 @@ public class Posts : BaseEntity
 	public PersonOrg DeliveryPersons { get; set; } = null!;
 	public Guid CreatedById { get; set; }
 	public SysUsers CreatedBy { get; set; } = null!;
+
+	public Guid PostHeaderId { get; set; }
+	public PostHeader PostHeaders { get; set; } = null!;
+	public Guid PostTypeId { get; set; }
+	public PostTypes PostTypes { get; set; } = null!;
 }
