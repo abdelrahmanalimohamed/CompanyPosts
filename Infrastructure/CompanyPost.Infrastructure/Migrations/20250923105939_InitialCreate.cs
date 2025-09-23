@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CompanyPost.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -195,6 +195,8 @@ namespace CompanyPost.Infrastructure.Migrations
                     delivery_method_id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     delivery_person_id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     created_by_id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    post_header_id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    post_type_id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     created_at = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -216,6 +218,18 @@ namespace CompanyPost.Infrastructure.Migrations
                         name: "fk_posts_person_orgs_post_original_sender_id",
                         column: x => x.post_original_sender_id,
                         principalTable: "person_orgs",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_posts_post_headers_post_header_id",
+                        column: x => x.post_header_id,
+                        principalTable: "post_headers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_posts_post_types_post_type_id",
+                        column: x => x.post_type_id,
+                        principalTable: "post_types",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -263,9 +277,25 @@ namespace CompanyPost.Infrastructure.Migrations
                 column: "delivery_person_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_posts_document_number",
+                table: "posts",
+                column: "document_number",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_posts_post_header_id",
+                table: "posts",
+                column: "post_header_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_posts_post_original_sender_id",
                 table: "posts",
                 column: "post_original_sender_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_posts_post_type_id",
+                table: "posts",
+                column: "post_type_id");
         }
 
         /// <inheritdoc />
@@ -275,16 +305,10 @@ namespace CompanyPost.Infrastructure.Migrations
                 name: "contracts");
 
             migrationBuilder.DropTable(
-                name: "post_types");
-
-            migrationBuilder.DropTable(
                 name: "posts");
 
             migrationBuilder.DropTable(
                 name: "projects");
-
-            migrationBuilder.DropTable(
-                name: "post_headers");
 
             migrationBuilder.DropTable(
                 name: "delivery_methods");
@@ -293,7 +317,13 @@ namespace CompanyPost.Infrastructure.Migrations
                 name: "person_orgs");
 
             migrationBuilder.DropTable(
+                name: "post_types");
+
+            migrationBuilder.DropTable(
                 name: "sys_users");
+
+            migrationBuilder.DropTable(
+                name: "post_headers");
         }
     }
 }
