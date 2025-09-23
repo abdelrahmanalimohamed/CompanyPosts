@@ -9,11 +9,19 @@ public class PostsController : ControllerBase
 	{
 		_mediator = mediator;
 	}
-	[HttpPost]
-	public async Task<IActionResult> CreatePost([FromBody] CreatePostDTO createPostDTO)
+	[HttpPost("create-post")]
+	public async Task<IActionResult> CreatePost([FromForm] CreatePostDTO createPostDTO)
 	{
 		var command = new CreatePostCommand(createPostDTO);
 		await _mediator.Send(command);
 		return Ok();
+	}
+
+	[HttpGet("get-posts")]
+	public async Task<IActionResult> GetPosts()
+	{
+		var query = new GetPostsQuery();
+		var posts = await _mediator.Send(query);
+		return Ok(posts);
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace CompanyPost.Application.CQRS.Handlers.Query;
+﻿namespace CompanyPost.Application.CQRS.Handlers.Query.Login;
 internal class SysUserLoginHandler : IRequestHandler<SysUserLoginQuery, AuthResultDTO>
 {
 	private readonly IUnitOfWork _unitOfWork;

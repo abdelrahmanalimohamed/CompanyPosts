@@ -6,6 +6,7 @@ public static class SeedData
 		await SeedPostHeader(context);
 		await SeedSysUser(context);
 		await SeedPostTypes(context);
+		await SeedDeliveryMethods(context);
 	}
 	private static async Task SeedPostHeader(CompanyPostDbContext context)
 	{
@@ -32,7 +33,6 @@ public static class SeedData
 			await context.SaveChangesAsync();
 		}
 	}
-
 	private static async Task SeedPostTypes(CompanyPostDbContext context)
 	{
 		if (!context.PostTypes.Any())
@@ -51,6 +51,19 @@ public static class SeedData
 					new PostTypes { PostId = postIncoming, Type = "داخلي" },
 					new PostTypes { PostId = postIncoming, Type = "خارجي" }
 				);
+			await context.SaveChangesAsync();
+		}
+	}
+	private static async Task SeedDeliveryMethods(CompanyPostDbContext context)
+	{
+		if (!context.DeliveryMethods.Any())
+		{
+			await context.DeliveryMethods.AddRangeAsync(
+				  new DeliveryMethods { Name = "يدوي" },
+				  new DeliveryMethods { Name = "بريد" },
+				  new DeliveryMethods { Name = "فاكس" },
+				  new DeliveryMethods { Name = "ايميل" }
+			  );
 			await context.SaveChangesAsync();
 		}
 	}

@@ -22,13 +22,16 @@ public class Program
 			await SeedData.Initialize(context);
 		}
 
-		// Configure the HTTP request pipeline.
-
 		app.UseHttpsRedirection();
+		app.UseCors(policy => policy.AllowAnyHeader()
+										.AllowAnyMethod()
+										.SetIsOriginAllowed(origin => true)
+										.AllowCredentials());
 
 		app.UseAuthentication();
 		app.UseAuthorization();
 		app.MapControllers();
+		app.UseStaticFiles();
 
 		app.Run();
 	}
