@@ -1,4 +1,4 @@
-﻿namespace CompanyPost.Application.CQRS.Commands;
+﻿namespace CompanyPost.Application.CQRS.Commands.Post;
 public class CreatePostCommand : IRequest<Unit>
 {
 	public CreatePostDTO CreatePostDTO { get; set; }

@@ -10,10 +10,13 @@ internal sealed class ContractConfiguration : IEntityTypeConfiguration<Contracts
 			.IsRequired();
 
 		builder.Property(builder => builder.Notes)
+			.HasMaxLength(100);
+
+		builder.Property(builder => builder.Attachments)
 			.HasMaxLength(100)
 			.IsRequired();
 
-		builder.Property(builder => builder.Attachments)
+		builder.Property(builder => builder.purchase_order_ref)
 			.HasMaxLength(100)
 			.IsRequired();
 
@@ -21,34 +24,31 @@ internal sealed class ContractConfiguration : IEntityTypeConfiguration<Contracts
 			.HasMaxLength(100)
 			.IsRequired();
 
+		builder.Property(builder => builder.working)
+			.HasMaxLength(100)
+			.IsRequired();
+
 		builder.Property(builder => builder.Value)
 			.HasMaxLength(100)
 			.IsRequired();
 
-		builder.Property(builder => builder.DateOfDelivery)
-			.IsRequired();
-
 		builder.Property(builder => builder.Contract_Date)
 			.IsRequired();
-
-		builder.HasOne(builder => builder.PersonOrgFrom)
-			.WithMany(t => t.ContractsPersonOrgFrom)
-			.HasForeignKey(builder => builder.PersonOrgFromId)
-			.OnDelete(DeleteBehavior.Restrict);
-
-		builder.HasOne(builder => builder.PersonOrgPreparedBy)
-			.WithMany(t => t.ContractsPersonOrgPreparedBy)
-			.HasForeignKey(builder => builder.PersonOrgPreparedById)
-			.OnDelete(DeleteBehavior.Restrict);
 
 		builder.HasOne(builder => builder.Projects)
 			.WithMany(t => t.Contracts)
 			.HasForeignKey(builder => builder.ProjectId)
 			.OnDelete(DeleteBehavior.Restrict);
 
-		builder.Property(builder => builder.Status)
-			.HasConversion<int>()
-			.IsRequired();
+		builder.HasOne(builder => builder.CreatedBy)
+			.WithMany(t => t.Contracts)
+			.HasForeignKey(builder => builder.CreatedById)
+			.OnDelete(DeleteBehavior.Restrict);
+
+		builder.HasOne(builder => builder.PersonOrgs)
+			.WithMany(t => t.Contracts)
+			.HasForeignKey(builder => builder.PersonOrgId)
+			.OnDelete(DeleteBehavior.Restrict);
 
 		builder.Property(builder => builder.Currency)
 			.HasConversion<int>()

@@ -6,6 +6,8 @@ global using CompanyPost.Infrastructure.Data;
 global using CompanyPost.Infrastructure.Repository;
 global using CompanyPost.Infrastructure.Services;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
+global using Microsoft.AspNetCore.Hosting;
+global using Microsoft.AspNetCore.Http;
 global using Microsoft.EntityFrameworkCore;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
 global using Microsoft.Extensions.Configuration;

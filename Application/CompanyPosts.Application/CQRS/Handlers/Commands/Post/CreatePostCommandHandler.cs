@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-
-namespace CompanyPost.Application.CQRS.Handlers.Commands.Post;
+﻿namespace CompanyPost.Application.CQRS.Handlers.Commands.Post;
 internal sealed class CreatePostCommandHandler 
 	: IRequestHandler<CreatePostCommand, Unit>
 {
@@ -14,31 +12,50 @@ internal sealed class CreatePostCommandHandler
 		_environment = webHostEnvironment;
 	}
 	public async Task<Unit> Handle(
-			CreatePostCommand request, 
+		CreatePostCommand request, 
 		CancellationToken cancellationToken)
 	{
 		var postRepository = _unitOfWork.Repository<Posts>();
-		string fileName = null;
 
-		if (request.CreatePostDTO.attachment != null && request.CreatePostDTO.attachment.Length > 0)
+		var fileName = await SaveAttachmentAsync(request.CreatePostDTO.attachment, cancellationToken);
+		var entity = CreatePosts(request , fileName);
+
+		await postRepository.AddAsync(entity, cancellationToken);
+		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		return Unit.Value;
+	}
+	private async Task<string> SaveAttachmentAsync(IFormFile attachment, CancellationToken cancellationToken)
+	{
+		if (attachment == null || attachment.Length == 0)
+			throw new Exception("Attachment is required and must not be empty.");
+
+		var uploadsPath = Path.Combine(_environment.WebRootPath, "posts");
+		if (!Directory.Exists(uploadsPath))
+			Directory.CreateDirectory(uploadsPath);
+
+		var fileName = Guid.NewGuid().ToString() + Path.GetExtension(attachment.FileName);
+		var filePath = Path.Combine(uploadsPath, fileName);
+
+		try
 		{
-			// Ensure uploads folder exists
-			var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
-			if (!Directory.Exists(uploadsPath))
-				Directory.CreateDirectory(uploadsPath);
-
-			// Generate unique filename
-			fileName = Guid.NewGuid().ToString() + Path.GetExtension(request.CreatePostDTO.attachment.FileName);
-
-			// Save file
-			var filePath = Path.Combine(uploadsPath, fileName);
 			using (var stream = new FileStream(filePath, FileMode.Create))
 			{
-				await request.CreatePostDTO.attachment.CopyToAsync(stream, cancellationToken);
+				await attachment.CopyToAsync(stream, cancellationToken);
 			}
-		}
 
-		var entity = new Posts
+			if (!File.Exists(filePath) || new FileInfo(filePath).Length == 0)
+				throw new Exception("File upload failed. Attachment was not saved properly.");
+
+			return fileName;
+		}
+		catch (Exception ex)
+		{
+			throw new Exception("An error occurred while uploading the attachment.", ex);
+		}
+	}
+	private Posts CreatePosts(CreatePostCommand request , string fileName)
+	{
+		return new Posts
 		{
 			Subject = request.CreatePostDTO.subject,
 			Attachment = fileName,
@@ -48,14 +65,11 @@ internal sealed class CreatePostCommandHandler
 			DateOfPost = request.CreatePostDTO.date_of_post,
 			PostOriginalSenderId = request.CreatePostDTO.post_original_sender_id,
 			DeliveryMethodId = request.CreatePostDTO.delivery_method_id,
-			DeliveryPersonId = request.CreatePostDTO.delivery_person_id,
-			CreatedById = Guid.Parse("26962e74-631d-41b9-adcb-141e93a54c56"),
+			//DeliveryPersonId = request.CreatePostDTO.delivery_person_id,
+			CreatedById = Guid.Parse("97b46533-ed0c-46dd-87c2-2ca396ee629e"),
 			PostHeaderId = request.CreatePostDTO.post_header_id,
-			PostTypeId = request.CreatePostDTO.post_type_id
+			PostTypeId = request.CreatePostDTO.post_type_id,
+			ProjectId = request.CreatePostDTO.project_id,
 		};
-
-		await postRepository.AddAsync(entity, cancellationToken);
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
-		return Unit.Value;
 	}
 }

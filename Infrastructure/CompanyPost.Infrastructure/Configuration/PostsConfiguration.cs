@@ -54,6 +54,11 @@ internal sealed class PostsConfiguration : IEntityTypeConfiguration<Posts>
 			.HasForeignKey(builder => builder.PostTypeId)
 			.OnDelete(DeleteBehavior.Restrict);
 
+		builder.HasOne(builder => builder.Projects)
+		.WithMany(t => t.Posts)
+		.HasForeignKey(builder => builder.ProjectId)
+		.OnDelete(DeleteBehavior.Restrict);
+
 		builder.HasIndex(builder => builder.DocumentNumber)
 			.IsUnique();
 	}

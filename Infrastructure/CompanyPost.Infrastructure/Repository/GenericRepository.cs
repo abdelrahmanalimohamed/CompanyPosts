@@ -16,8 +16,8 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity ,
 	{
 		return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
 	}
-	public void UpdateAsync(T entity) => _dbSet.Update(entity);
-	public void DeleteAsync(T entity) => _dbSet.Remove(entity);
+	public void Update(T entity) => _dbSet.Update(entity);
+	public void Delete(T entity) => _dbSet.Remove(entity);
 	public async Task<T?> FindAsync(Expression<Func<T, bool>> predicate, 
 		CancellationToken cancellationToken = default)
 	{
@@ -44,5 +44,11 @@ public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity ,
 		}
 
 		return await query.ToListAsync(cancellationToken);
+	}
+	public async Task<IReadOnlyList<T>> FindAllAsync(
+		Expression<Func<T, bool>> predicate = null,
+		CancellationToken cancellationToken = default)
+	{
+		return await _dbSet.Where(predicate).ToListAsync(cancellationToken);
 	}
 }

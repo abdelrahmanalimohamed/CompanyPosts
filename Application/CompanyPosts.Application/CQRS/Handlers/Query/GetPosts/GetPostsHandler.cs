@@ -24,6 +24,7 @@ internal sealed class GetPostsHandler
 		var posts = await postRepository.FindWithIncludeAsync(null ,includes , cancellationToken);
 
 		var postDTOs = posts.Select(p => new PostResponseDTO(
+			p.Id,
 			p.Subject,
 			p.DocumentNumber,
 			p.SerialNumber,
@@ -35,6 +36,7 @@ internal sealed class GetPostsHandler
 			p.DeliveryMethods.Name,
 			p.DeliveryPersons.Name,
 			p.PostOriginalSenders.Name,
+			"",
 			p.Attachment != null ? $"/uploads/{p.Attachment}" : null
 		));
 		return postDTOs;

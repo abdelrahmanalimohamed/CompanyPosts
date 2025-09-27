@@ -49,13 +49,13 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnType("datetime(6)")
                         .HasColumnName("created_at");
 
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("created_by_id");
+
                     b.Property<int>("Currency")
                         .HasColumnType("int")
                         .HasColumnName("currency");
-
-                    b.Property<DateTime>("DateOfDelivery")
-                        .HasColumnType("datetime(6)")
-                        .HasColumnName("date_of_delivery");
 
                     b.Property<string>("Details")
                         .IsRequired()
@@ -64,26 +64,17 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnName("details");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("notes");
 
-                    b.Property<Guid>("PersonOrgFromId")
+                    b.Property<Guid>("PersonOrgId")
                         .HasColumnType("char(36)")
-                        .HasColumnName("person_org_from_id");
-
-                    b.Property<Guid>("PersonOrgPreparedById")
-                        .HasColumnType("char(36)")
-                        .HasColumnName("person_org_prepared_by_id");
+                        .HasColumnName("person_org_id");
 
                     b.Property<Guid>("ProjectId")
                         .HasColumnType("char(36)")
                         .HasColumnName("project_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int")
-                        .HasColumnName("status");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -91,14 +82,26 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("value");
 
+                    b.Property<string>("purchase_order_ref")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("purchase_order_ref");
+
+                    b.Property<string>("working")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("working");
+
                     b.HasKey("Id")
                         .HasName("pk_contracts");
 
-                    b.HasIndex("PersonOrgFromId")
-                        .HasDatabaseName("ix_contracts_person_org_from_id");
+                    b.HasIndex("CreatedById")
+                        .HasDatabaseName("ix_contracts_created_by_id");
 
-                    b.HasIndex("PersonOrgPreparedById")
-                        .HasDatabaseName("ix_contracts_person_org_prepared_by_id");
+                    b.HasIndex("PersonOrgId")
+                        .HasDatabaseName("ix_contracts_person_org_id");
 
                     b.HasIndex("ProjectId")
                         .HasDatabaseName("ix_contracts_project_id");
@@ -137,13 +140,11 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("address");
 
                     b.Property<string>("Contact_Person")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("contact_person");
@@ -153,7 +154,6 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)")
                         .HasColumnName("email");
@@ -165,21 +165,17 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnName("name");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("varchar(20)")
                         .HasColumnName("phone");
 
                     b.Property<string>("SAP_BP")
                         .IsRequired()
-                        .HasColumnType("varchar(255)")
+                        .HasColumnType("longtext")
                         .HasColumnName("sap_bp");
 
                     b.HasKey("Id")
                         .HasName("pk_person_orgs");
-
-                    b.HasAlternateKey("SAP_BP")
-                        .HasName("ak_person_orgs_sap_bp");
 
                     b.ToTable("person_orgs", (string)null);
                 });
@@ -292,6 +288,10 @@ namespace CompanyPost.Infrastructure.Migrations
                         .HasColumnType("char(36)")
                         .HasColumnName("post_type_id");
 
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("char(36)")
+                        .HasColumnName("project_id");
+
                     b.Property<string>("SerialNumber")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -328,6 +328,9 @@ namespace CompanyPost.Infrastructure.Migrations
 
                     b.HasIndex("PostTypeId")
                         .HasDatabaseName("ix_posts_post_type_id");
+
+                    b.HasIndex("ProjectId")
+                        .HasDatabaseName("ix_posts_project_id");
 
                     b.ToTable("posts", (string)null);
                 });
@@ -398,19 +401,19 @@ namespace CompanyPost.Infrastructure.Migrations
 
             modelBuilder.Entity("CompanyPost.Domain.Entities.Contracts", b =>
                 {
-                    b.HasOne("CompanyPost.Domain.Entities.PersonOrg", "PersonOrgFrom")
-                        .WithMany("ContractsPersonOrgFrom")
-                        .HasForeignKey("PersonOrgFromId")
+                    b.HasOne("CompanyPost.Domain.Entities.SysUsers", "CreatedBy")
+                        .WithMany("Contracts")
+                        .HasForeignKey("CreatedById")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_contracts_person_orgs_person_org_from_id");
+                        .HasConstraintName("fk_contracts_sys_users_created_by_id");
 
-                    b.HasOne("CompanyPost.Domain.Entities.PersonOrg", "PersonOrgPreparedBy")
-                        .WithMany("ContractsPersonOrgPreparedBy")
-                        .HasForeignKey("PersonOrgPreparedById")
+                    b.HasOne("CompanyPost.Domain.Entities.PersonOrg", "PersonOrgs")
+                        .WithMany("Contracts")
+                        .HasForeignKey("PersonOrgId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
-                        .HasConstraintName("fk_contracts_person_orgs_person_org_prepared_by_id");
+                        .HasConstraintName("fk_contracts_person_orgs_person_org_id");
 
                     b.HasOne("CompanyPost.Domain.Entities.Projects", "Projects")
                         .WithMany("Contracts")
@@ -419,9 +422,9 @@ namespace CompanyPost.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_contracts_projects_project_id");
 
-                    b.Navigation("PersonOrgFrom");
+                    b.Navigation("CreatedBy");
 
-                    b.Navigation("PersonOrgPreparedBy");
+                    b.Navigation("PersonOrgs");
 
                     b.Navigation("Projects");
                 });
@@ -482,6 +485,13 @@ namespace CompanyPost.Infrastructure.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_posts_post_types_post_type_id");
 
+                    b.HasOne("CompanyPost.Domain.Entities.Projects", "Projects")
+                        .WithMany("Posts")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_posts_projects_project_id");
+
                     b.Navigation("CreatedBy");
 
                     b.Navigation("DeliveryMethods");
@@ -493,6 +503,8 @@ namespace CompanyPost.Infrastructure.Migrations
                     b.Navigation("PostOriginalSenders");
 
                     b.Navigation("PostTypes");
+
+                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("CompanyPost.Domain.Entities.DeliveryMethods", b =>
@@ -502,9 +514,7 @@ namespace CompanyPost.Infrastructure.Migrations
 
             modelBuilder.Entity("CompanyPost.Domain.Entities.PersonOrg", b =>
                 {
-                    b.Navigation("ContractsPersonOrgFrom");
-
-                    b.Navigation("ContractsPersonOrgPreparedBy");
+                    b.Navigation("Contracts");
 
                     b.Navigation("PostsAsDeliveryPerson");
 
@@ -526,10 +536,14 @@ namespace CompanyPost.Infrastructure.Migrations
             modelBuilder.Entity("CompanyPost.Domain.Entities.Projects", b =>
                 {
                     b.Navigation("Contracts");
+
+                    b.Navigation("Posts");
                 });
 
             modelBuilder.Entity("CompanyPost.Domain.Entities.SysUsers", b =>
                 {
+                    b.Navigation("Contracts");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618

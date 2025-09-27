@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace CompanyPost.Application.DTO.Request;
+﻿namespace CompanyPost.Application.DTO.Request;
 public record CreatePostDTO(
 	string subject , 
 	string document_number , 
@@ -12,4 +10,5 @@ public record CreatePostDTO(
 	Guid post_header_id , 
 	Guid post_type_id ,
 	Guid delivery_person_id,
+	Guid project_id,
 	IFormFile attachment);

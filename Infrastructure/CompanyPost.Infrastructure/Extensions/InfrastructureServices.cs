@@ -14,6 +14,7 @@ public static class InfrastructureServices
 
 		services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 		services.AddScoped<IUnitOfWork , UnitOfWork>();
+		services.AddScoped<ISaveAttachment, SaveAttachment>();
 
 		services.Configure<JwtSettings>(conguration.GetSection("JwtSettings"));
 		services.AddSingleton<IJWTGenerator, JwtGenerator>();
